@@ -1,9 +1,9 @@
 package com.liu;
 
 import com.liu.spring.aop.SmartAnimal;
-import com.liu.spring.component.UserAction;
-import com.liu.spring.component.UserDao;
-import com.liu.spring.component.UserService;
+import com.liu.mySpring.component.UserAction;
+import com.liu.mySpring.component.UserDao;
+import com.liu.mySpring.component.UserService;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class Main {

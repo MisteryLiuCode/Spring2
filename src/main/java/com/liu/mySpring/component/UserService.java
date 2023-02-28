@@ -1,4 +1,4 @@
-package com.liu.spring.component;
+package com.liu.mySpring.component;
 
 import org.springframework.stereotype.Service;
 

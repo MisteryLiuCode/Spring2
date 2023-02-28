@@ -1,6 +1,5 @@
-package com.liu.spring.component;
+package com.liu.mySpring.component;
 
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 //a
 @Component

@@ -10,8 +10,10 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="Spring2" />
-        <module name="MySpring" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="MySpring" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

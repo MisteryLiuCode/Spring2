@@ -1,12 +1,14 @@
 package com.liu.mySpring.ioc;
 
 
+import com.liu.mySpring.annotation.Autowired;
 import com.liu.mySpring.annotation.Component;
 import com.liu.mySpring.annotation.ComponentScan;
 import com.liu.mySpring.annotation.Scope;
 import org.apache.commons.lang.StringUtils;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.Enumeration;
@@ -28,16 +30,16 @@ public class SpringApplicationContext {
         System.out.println("beanDefinationMap" + beanDefinationConcurrentMap);
         //拿到所有key，也就是beanName
         Enumeration<String> keys = beanDefinationConcurrentMap.keys();
-        while (keys.hasMoreElements()){
+        while (keys.hasMoreElements()) {
             String beanName = keys.nextElement();
 //            通过beanName得到对应的beanDefination
             BeanDefination beanDefination = beanDefinationConcurrentMap.get(beanName);
 //            判断该bean是singleton还是prototype
-            if ("singleton".equalsIgnoreCase(beanDefination.getScope())){
+            if ("singleton".equalsIgnoreCase(beanDefination.getScope())) {
 //                将该bean实例放入singletonObjects
 //                调用创建bean的方法，直接创建bean
                 Object bean = creatBean(beanDefination);
-                singletonObjects.put(beanName,bean);
+                singletonObjects.put(beanName, bean);
             }
 
         }
@@ -116,14 +118,36 @@ public class SpringApplicationContext {
         }
     }
 
-//    完成creatBean(BeanDefination beanDefination)，用于创建对象
+    //    完成creatBean(BeanDefination beanDefination)，用于创建对象
 //    容器初始化完就初始化单例池
-    private Object creatBean(BeanDefination beanDefination){
+    private Object creatBean(BeanDefination beanDefination) {
         //得到bean的clazz对象
         Class aClass = beanDefination.getaClass();
         //使用反射创建bean
         try {
             Object instance = aClass.getDeclaredConstructor().newInstance();
+            //遍历当前要创建的所有字段，有没有@AutoWired注解
+            Field[] declaredFields = aClass.getDeclaredFields();
+            for (Field declaredField : declaredFields) {
+                //得到字段的名字，因为自己写的注解@AutoWired只完成按照名称注入
+                if (declaredField.isAnnotationPresent(Autowired.class)) {
+                    //看required是否为true，false则不进行组装
+                    Autowired annotation = declaredField.getAnnotation(Autowired.class);
+                    boolean required = annotation.required();
+                    if (!required){
+                        break;
+                    }
+                    //得到字段名称
+                    String name = declaredField.getName();
+                    //通过getBean方法获取要组装的对象，进行赋值
+                    Object bean = getBean(name);
+                    //进行组装，但是一般我们是
+                    // @Autowired private MonsterDao monsterDao;
+                    //暴力破解，把private变为可访问，而且可以提高性能
+                    declaredField.setAccessible(true);
+                    declaredField.set(instance, bean);
+                }
+            }
             return instance;
         } catch (InstantiationException e) {
             e.printStackTrace();
@@ -139,14 +163,14 @@ public class SpringApplicationContext {
     }
 
     public Object getBean(String className) {
-        if (beanDefinationConcurrentMap.containsKey(className)){
+        if (beanDefinationConcurrentMap.containsKey(className)) {
 //        拿到bean的信息
-        BeanDefination beanDefination = beanDefinationConcurrentMap.get(className);
-        if ("singleton".equalsIgnoreCase(beanDefination.getScope())){
-            return singletonObjects.get(className);
-        }
-        //creatBean()创建bean
-        return creatBean(beanDefination);
+            BeanDefination beanDefination = beanDefinationConcurrentMap.get(className);
+            if ("singleton".equalsIgnoreCase(beanDefination.getScope())) {
+                return singletonObjects.get(className);
+            }
+            //creatBean()创建bean
+            return creatBean(beanDefination);
         } else {
             //不存在，抛异常
             throw new NullPointerException("没有该bean");

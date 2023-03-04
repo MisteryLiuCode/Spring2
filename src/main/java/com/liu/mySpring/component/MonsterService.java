@@ -1,6 +1,7 @@
 package com.liu.mySpring.component;
 
 
+import com.liu.mySpring.annotation.Autowired;
 import com.liu.mySpring.annotation.Component;
 import com.liu.mySpring.annotation.Scope;
 
@@ -9,4 +10,12 @@ import com.liu.mySpring.annotation.Scope;
 @Component(value = "monsterService")
 @Scope(value = "prototype")
 public class MonsterService {
+    //这里使用自己的注解
+    //实现按照名字来组装即可
+    @Autowired
+    private MonsterDao monsterDao;
+
+    public void m1(){
+        monsterDao.hi();
+    }
 }

@@ -2,6 +2,8 @@ package com.liu.mySpring;
 
 
 import com.liu.mySpring.component.MonsterService;
+import com.liu.mySpring.component.SmartAnimal;
+import com.liu.mySpring.component.SmartDog;
 import com.liu.mySpring.ioc.SpringApplicationContext;
 import com.liu.mySpring.ioc.SpringConfig;
 
@@ -26,7 +28,10 @@ public class MySpringTest
 //        System.out.println("ok");
 
 //        测试依赖注入
-        MonsterService monsterService = (MonsterService) ioc.getBean("monsterService");
-        monsterService.m1();
+//        MonsterService monsterService = (MonsterService) ioc.getBean("monsterService");
+//        monsterService.m1();
+
+        SmartAnimal smartDog = (SmartAnimal)ioc.getBean("smartDog");
+        System.out.println("smartDog="+smartDog.getClass());
     }
 }
